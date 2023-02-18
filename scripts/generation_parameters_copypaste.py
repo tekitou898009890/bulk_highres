@@ -277,7 +277,7 @@ Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 965400086, Size: 512x512, Model
                 p.sampler_name = v
             elif k == "Steps":
                 p.steps = v
-            elif k == "":
+            # elif k == "":
             else:
                 res[k] = v
                 
