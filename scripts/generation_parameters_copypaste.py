@@ -271,13 +271,13 @@ Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 965400086, Size: 512x512, Model
         else:
             if k == "Seed":
                 p.seed = v
-            else if k == "Cfg scale":
+            elif k == "Cfg scale":
                 p.cfg_scale = v
-            else if k == "Sampler":
+            elif k == "Sampler":
                 p.sampler_name = v
-            else if k == "Steps":
+            elif k == "Steps":
                 p.steps = v
-            else if k == "":
+            elif k == "":
             else:
                 res[k] = v
                 
