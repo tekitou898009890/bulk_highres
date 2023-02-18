@@ -270,13 +270,13 @@ Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 965400086, Size: 512x512, Model
             res['height'] = int(m.group(2))
         else:
             if k == "Seed":
-                p.seed = v
+                res['seed'] = int(v)
             elif k == "Cfg scale":
-                p.cfg_scale = v
+                res['cfg_scale'] = int(v)
             elif k == "Sampler":
-                p.sampler_name = v
+                res['sampler_name'] = v
             elif k == "Steps":
-                p.steps = v
+                res['steps'] = int(v)
             # elif k == "":
             else:
                 res[k] = v
