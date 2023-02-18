@@ -58,7 +58,7 @@ class Script(scripts.Script):
         return [prompt_txt]
 
     def run(self, p, prompt_txt):
-        print("test")
+        print("test",file=sys.stderr)
         p.do_not_save_grid = True
 
         images = []
