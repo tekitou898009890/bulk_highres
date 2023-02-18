@@ -63,7 +63,6 @@ class Script(scripts.Script):
                     all_prompts += proc.all_prompts
                     infotexts += proc.infotexts
                     
-                    print(f"{proc}")
                     
 
         return Processed(p, images, p.seed, "", all_prompts=all_prompts, infotexts=infotexts)
