@@ -4,54 +4,32 @@ import modules.scripts as scripts
 import modules.ui
 
 from modules import images
-from modules.processing import Processed, process_images
+from modules.processing import process_images,Processed
+from modules.processing import Processed
 from modules.shared import opts, cmd_opts, state
 
 import copy
 import math
 import os
-import random
 import sys
 import traceback
-import shlex
+
 
 from PIL import Image
 
 from modules import devices, sd_models, images,extra_networks,sd_samplers
-from modules import generation_parameters_copypaste,script_callbacks
+from modules import script_callbacks,processing
 
-
-
-
-def tpl_button_click2(tpl_textbox):
-    for filename in os.listdir(tpl_textbox):
-        if filename.endswith(".png"):
-            file_path = os.path.join(tpl_textbox, filename)
-            with Image.open(file_path) as im:
-                metadata = im.info
-            print(f"{filename}: {metadata}")
-            parse_generation_parameters(metadata)
-
-def tpl_button_click3(tpl_textbox):
-    print(f"Hello {tpl_textbox}")
+from scripts import generation_parameters_copypaste
 
 class Script(scripts.Script):
     def title(self):
         return "bulk_highres"
-    def show(self, is_img2img):
-        return modules.scripts.AlwaysVisible
-    def ui(self, is_img2img):       
-        with gr.Accordion("Bulk Highres Generate",open = False):
-            print("testes1")
-            print(f"testes2")
-            prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
-            tpl_button = gr.Button(value='Push me')
 
-            tpl_button.click(
-                fn=tpl_button_click3,
-                inputs=[prompt_txt],
-                outputs=[]
-            )
+    def ui(self, is_img2img):
+        with gr.Row():
+            prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
+        
         # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
         # We don't shrink back to 1, because that causes the control to ignore [enter], and it may
         # be unclear to the user that shift-enter is needed.
@@ -60,28 +38,32 @@ class Script(scripts.Script):
 
     def run(self, p, prompt_txt):
         print("test",file=sys.stderr)
-        print("testes1")
-        print(f"testes2")
+        print("tes1")
+        print(f"tes2")
         p.do_not_save_grid = True
 
         images = []
         all_prompts = []
         infotexts = []
         for filename in os.listdir(prompt_txt):
-            if filename.endswith(".png"):
-                file_path = os.path.join(prompt_txt, filename)
-                with Image.open(file_path) as im:
-                    metadata = im.info
-                print(f"{filename}: {metadata}")
-                res = parse_generation_parameters(metadata)
+                if filename.endswith(".png"):
+                    file_path = os.path.join(prompt_txt, filename)
+                    with Image.open(file_path) as im:
+                        metadata = im.info
+                    metadata = generation_parameters_copypaste.parse_generation_parameters(metadata['parameters'])
+                    
+                    copy_p = copy.copy(p)
+                    for k, v in metadata.items():
+                        setattr(copy_p, k, v)
+                    for k, v in copy_p.__dict__.items():
+                        print(f"k:{k},v:{v}")
 
-                copy_p = copy.copy(p)
-                for k, v in res.items():
-                    setattr(copy_p, k, v)
-
-                proc = process_images(copy_p)
-                images += proc.images
-                all_prompts += proc.all_prompts
-                infotexts += proc.infotexts
+                    proc = process_images(copy_p)
+                    images += proc.images
+                    all_prompts += proc.all_prompts
+                    infotexts += proc.infotexts
+                    
+                    print(f"{proc}")
+                    
 
         return Processed(p, images, p.seed, "", all_prompts=all_prompts, infotexts=infotexts)
