@@ -42,7 +42,8 @@ class Script(scripts.Script):
         return modules.scripts.AlwaysVisible
     def ui(self, is_img2img):       
         with gr.Accordion("Bulk Highres Generate",open = False):
-        
+            print("testes1")
+            print(f"testes2")
             prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
             tpl_button = gr.Button(value='Push me')
 
@@ -59,6 +60,8 @@ class Script(scripts.Script):
 
     def run(self, p, prompt_txt):
         print("test",file=sys.stderr)
+        print("testes1")
+        print(f"testes2")
         p.do_not_save_grid = True
 
         images = []
