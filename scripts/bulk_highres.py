@@ -28,15 +28,17 @@ class Script(scripts.Script):
 
     def ui(self, is_img2img):
         with gr.Row():
+            if is_img2img:
+                upscale = gr.Slider(minimum=0, maximum=4.0, step=0.1, label="upscale", elem_id=f"upscale", value=2.0)
             prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
         
         # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
         # We don't shrink back to 1, because that causes the control to ignore [enter], and it may
         # be unclear to the user that shift-enter is needed.
 
-        return [prompt_txt]
+        return [prompt_txt,upscale]
 
-    def run(self, p, prompt_txt):
+    def run(self, p, prompt_txt,upscale):
         # print("tes1")
         
         p.do_not_save_grid = True
@@ -52,10 +54,15 @@ class Script(scripts.Script):
                     metadata = generation_parameters_copypaste.parse_generation_parameters(metadata['parameters'])
                     
                     copy_p = copy.copy(p)
-                    for k, v in metadata.items():
-                        setattr(copy_p, k, v)
-                    for k, v in copy_p.__dict__.items():
-                        # print(f"k:{k},v:{v}")
+                    if upscale is not None:
+                        for k, v in metadata.items():
+                            if k is 'width' or k is 'height':
+                                setattr(copy_p, k, v * upscale)
+                    else:
+                        for k, v in metadata.items():
+                            setattr(copy_p, k, v)
+                    # for k, v in copy_p.__dict__.items():
+                    #     print(f"k:{k},v:{v}")
 
                     proc = process_images(copy_p)
                     images += proc.images
