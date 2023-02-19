@@ -23,14 +23,17 @@ from modules import script_callbacks,processing
 from scripts import generation_parameters_copypaste
 
 class Script(scripts.Script):
+    
+    def __init__(self):
+        self.upscale = 1.0
+        
     def title(self):
         return "bulk_highres"
 
     def ui(self, is_img2img):
         with gr.Row():
-            upscale = None
             if is_img2img:
-                upscale = gr.Slider(minimum=0, maximum=4.0, step=0.1, label="upscale", elem_id=f"upscale", value=2.0)
+                self.upscale = gr.Slider(minimum=1.0, maximum=4.0, step=0.1, label="upscale", elem_id=f"upscale", value=2.0)
             prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
         
         # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
@@ -55,10 +58,10 @@ class Script(scripts.Script):
                     metadata = generation_parameters_copypaste.parse_generation_parameters(metadata['parameters'])
                     
                     copy_p = copy.copy(p)
-                    if upscale is not None:
+                    if self.upscale > 1.0:
                         for k, v in metadata.items():
                             if k == 'width' or k == 'height':
-                                setattr(copy_p, k, v * upscale)
+                                setattr(copy_p, k, v * self.upscale)
                     else:
                         for k, v in metadata.items():
                             setattr(copy_p, k, v)
