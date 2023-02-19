@@ -40,9 +40,9 @@ class Script(scripts.Script):
         # We don't shrink back to 1, because that causes the control to ignore [enter], and it may
         # be unclear to the user that shift-enter is needed.
 
-        return [prompt_txt,upscale]
+        return [prompt_txt]
 
-    def run(self, p, prompt_txt,upscale):
+    def run(self, p, prompt_txt):
         # print("tes1")
         
         p.do_not_save_grid = True
