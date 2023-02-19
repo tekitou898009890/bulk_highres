@@ -28,6 +28,7 @@ class Script(scripts.Script):
 
     def ui(self, is_img2img):
         with gr.Row():
+            upscale = None
             if is_img2img:
                 upscale = gr.Slider(minimum=0, maximum=4.0, step=0.1, label="upscale", elem_id=f"upscale", value=2.0)
             prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
