@@ -277,7 +277,10 @@ Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 965400086, Size: 512x512, Model
                 res['sampler_name'] = v
             elif k == "Steps":
                 res['steps'] = int(v)
-            # elif k == "":
+            elif k == "Model":
+                res['sd_model_checkpoint'] = v
+            elif k == "Denoising strength":
+                res['denoising_strength'] = v    
             else:
                 res[k] = v
                 
