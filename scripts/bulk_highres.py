@@ -57,7 +57,7 @@ class Script(scripts.Script):
                     copy_p = copy.copy(p)
                     if upscale is not None:
                         for k, v in metadata.items():
-                            if k is 'width' or k is 'height':
+                            if k == 'width' or k == 'height':
                                 setattr(copy_p, k, v * upscale)
                     else:
                         for k, v in metadata.items():
