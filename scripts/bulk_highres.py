@@ -31,9 +31,10 @@ class Script(scripts.Script):
         return "bulk_highres"
 
     def ui(self, is_img2img):
+        if is_img2img:
+            with gr.Row():
+                self.upscale = gr.Slider(minimum=1.0, maximum=4.0, step=0.1,interactive =True, label="upscale", elem_id=f"upscale", value=2.0)
         with gr.Row():
-            if is_img2img:
-                self.upscale = gr.Slider(minimum=1.0, maximum=4.0, step=0.1, label="upscale", elem_id=f"upscale", value=2.0)
             prompt_txt = gr.Textbox(label="List of prompt inputs", lines=1, elem_id=self.elem_id("prompt_txt"))
         
         # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
