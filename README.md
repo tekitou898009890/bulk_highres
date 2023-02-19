@@ -17,3 +17,5 @@ i2i_modeはディレクトリの画像を「i2i_upscale」で指定した倍率�
 PNGのメタデータから読み取って回してるだけなので、他の拡張(ControlNetやtwo-shot)で生成した画像は分けて生成した方がいいと思います。
 
 papespaceだと「copy path」でコピーされるパスが「stable-diffusion-webui/outputs」と、「/notebooks/」が抜けているので入力する際は「/notebooks/stable-diffusion-webui/outputs」といった感じで入力してください。
+
+img2imgタブのscriptからはとりあえず使用できないようになってます。
