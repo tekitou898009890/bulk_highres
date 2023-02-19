@@ -37,9 +37,8 @@ class Script(scripts.Script):
         return [prompt_txt]
 
     def run(self, p, prompt_txt):
-        print("test",file=sys.stderr)
-        print("tes1")
-        print(f"tes2")
+        # print("tes1")
+        
         p.do_not_save_grid = True
 
         images = []
@@ -56,7 +55,7 @@ class Script(scripts.Script):
                     for k, v in metadata.items():
                         setattr(copy_p, k, v)
                     for k, v in copy_p.__dict__.items():
-                        print(f"k:{k},v:{v}")
+                        # print(f"k:{k},v:{v}")
 
                     proc = process_images(copy_p)
                     images += proc.images
