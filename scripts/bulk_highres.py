@@ -46,7 +46,7 @@ class Script(scripts.Script):
 
         if is_img2img:
             i2i_mode.visible = False
-            i2i_denoising_strength = False
+            i2i_denoising_strength.visible = False
             i2i_upscaler.visible = False
             img_dir.visible = False
         
