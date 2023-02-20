@@ -24,13 +24,14 @@ from scripts import generation_parameters_copypaste
 class Script(scripts.Script):
     def __init__(self):
         self.is_i2i = False
+        self.i2i_mode = False
     def title(self):
         return "bulk_highres"
     
     def ui(self, is_img2img):
         
         with gr.Row():
-            i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode")
+            self.i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode")
         
         with gr.Row():
             i2i_denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,interactive =True, label="i2i_denoising_strength", elem_id=f"i2i_denoising_strength", value=0.7)
@@ -41,11 +42,10 @@ class Script(scripts.Script):
         with gr.Row():
             img_dir = gr.Textbox(label="List of images inputs", lines=1, elem_id=self.elem_id("img_dir"))
         
-            
+        
         self.is_i2i = is_img2img
 
         if is_img2img:
-            i2i_mode.visible = False
             i2i_denoising_strength = False
             i2i_upscaler.visible = False
             img_dir.visible = False
@@ -55,9 +55,9 @@ class Script(scripts.Script):
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode]
+        return [img_dir,i2i_upscaler, i2i_denoising_strength]
 
-    def run(self, p, img_dir, i2i_upscaler, i2i_denoising_strength, i2i_mode):
+    def run(self, p, img_dir, i2i_upscaler, i2i_denoising_strength):
         # print("tes1")
         
         p.do_not_save_grid = True
@@ -73,7 +73,7 @@ class Script(scripts.Script):
                 metadata = generation_parameters_copypaste.parse_generation_parameters(metadata['parameters'])
                 
                 copy_p = copy.copy(p)
-                if i2i_mode:
+                if self.i2i_mode:
                     img = Image.open(file_path)
                     img = img.convert("RGB")
                     copy_p = StableDiffusionProcessingImg2Img(
