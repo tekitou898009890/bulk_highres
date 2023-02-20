@@ -1,8 +1,8 @@
 # bulk_highres
 
-stable-diffusion-webuiで生成された画像のメタデータを読み取って再度生成を行うスクリプトになります。
+stable-diffusion-webuiで生成された画像のメタデータを読み取って再度生成を行うスクリプトです。
 
-ガチャで回した画像を特定のフォルダに用意してスクリプトからパスを指定することでフォルダ内の画像を一括でhighres.fix・i2iで処理したり、生成した画像を別の拡張(ControlNetやtwo-shotなど)と組み合わせて生成したりできます。
+ガチャで回した画像を特定のフォルダに用意してスクリプトからパスを指定することでフォルダ内の画像を一枚ごとにメタデータを読み取ってhighres.fix・i2iで処理したり、生成した画像を別の拡張(ControlNetやtwo-shotなど)と組み合わせて生成したりできます。
 
 ## 使用方法
 
@@ -10,7 +10,7 @@ scriptタブの「bulk_highres」からhighresで回したい画像をディレ�
 
 そのままGenerateボタンを押すと生成されていきます。
 
-i2i_modeはディレクトリの画像を「i2i_upscale」で指定した倍率でi2iしていきます。
+i2i_modeはディレクトリの画像を「i2i_upscale」、「i2i_denoising_strength」で指定した倍率、強度でi2iしていきます。
 
 ### 注意
 
