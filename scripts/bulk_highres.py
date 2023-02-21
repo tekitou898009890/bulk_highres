@@ -7,6 +7,7 @@ from modules import images
 from modules.processing import process_images,Processed
 from modules.processing import StableDiffusionProcessingImg2Img
 from modules.shared import opts, cmd_opts, state
+from modules.images import read_info_from_image
 
 import copy
 import math
@@ -69,8 +70,12 @@ class Script(scripts.Script):
             if filename.endswith(".png"):
                 file_path = os.path.join(img_dir, filename)
                 with Image.open(file_path) as im:
-                    metadata = im.info
-                metadata = generation_parameters_copypaste.parse_generation_parameters(metadata['parameters'])
+                    metadata,items = read_info_from_image(im)
+                    if metadata is None:
+                      print(f"Skip {filename} as it has no metadata.")
+                      continue
+                    print(f"{metadata}")
+                metadata = generation_parameters_copypaste.parse_generation_parameters(metadata)
                 
                 copy_p = copy.copy(p)
                 if i2i_mode:
