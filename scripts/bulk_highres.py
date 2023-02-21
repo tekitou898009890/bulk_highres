@@ -74,7 +74,7 @@ class Script(scripts.Script):
                     if metadata is None:
                       print(f"Skip {filename} as it has no metadata.")
                       continue
-                    print(f"{metadata}")
+                    # print(f"{metadata}")
                 metadata = generation_parameters_copypaste.parse_generation_parameters(metadata)
                 
                 copy_p = copy.copy(p)
