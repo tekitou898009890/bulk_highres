@@ -1,6 +1,7 @@
 # This file is always executed
 import gradio as gr
 import modules.scripts as scripts
+import modules.shared as shared
 import modules.ui
 
 from modules import images
@@ -66,6 +67,9 @@ class Script(scripts.Script):
         images = []
         all_prompts = []
         infotexts = []
+
+        list_meta = []
+
         for filename in os.listdir(img_dir):
             if filename.endswith(".png"):
                 file_path = os.path.join(img_dir, filename)
@@ -76,32 +80,44 @@ class Script(scripts.Script):
                       continue
                     # print(f"{metadata}")
                 metadata = generation_parameters_copypaste.parse_generation_parameters(metadata)
-                
-                copy_p = copy.copy(p)
-                if i2i_mode:
-                    img = Image.open(file_path)
-                    img = img.convert("RGB")
-                    copy_p = StableDiffusionProcessingImg2Img(
-                        init_images=[img],
-                        outpath_samples=opts.outdir_samples or opts.outdir_img2img_samples,
-                        denoising_strength=i2i_denoising_strength
-                    )
-                    for k, v in metadata.items():
-                        if k == 'width' or k == 'height':
-                            setattr(copy_p, k, v * i2i_upscaler)
-                        else:
-                            setattr(copy_p, k, v)
-                    
-                else:
-                    for k, v in metadata.items():
+                list_meta.append(metadata)
+        
+        list_meta.sort(key=lambda x: x['sd_model_checkpoint'])
+
+        for metadata in list_meta:
+
+            # change checkpoints
+            info = modules.sd_models.get_closet_checkpoint_match(metadata['sd_model_checkpoint'])
+            if info is None:
+                raise RuntimeError(f"Unknown checkpoint: {metadata['sd_model_checkpoint']}")
+            modules.sd_models.reload_model_weights(shared.sd_model, info)        
+
+            # run process
+            copy_p = copy.copy(p)
+            if i2i_mode:
+                img = Image.open(file_path)
+                img = img.convert("RGB")
+                copy_p = StableDiffusionProcessingImg2Img(
+                    init_images=[img],
+                    outpath_samples=opts.outdir_samples or opts.outdir_img2img_samples,
+                    denoising_strength=i2i_denoising_strength
+                )
+                for k, v in metadata.items():
+                    if k == 'width' or k == 'height':
+                        setattr(copy_p, k, v * i2i_upscaler)
+                    else:
                         setattr(copy_p, k, v)
-                # for k, v in copy_p.__dict__.items():
-                #     print(f"k:{k},v:{v}")
                 
-                proc = process_images(copy_p)
-                
-                images += proc.images
-                all_prompts += proc.all_prompts
-                infotexts += proc.infotexts         
+            else:
+                for k, v in metadata.items():
+                    setattr(copy_p, k, v)
+            # for k, v in copy_p.__dict__.items():
+            #     print(f"k:{k},v:{v}")
+            
+            proc = process_images(copy_p)
+            
+            images += proc.images
+            all_prompts += proc.all_prompts
+            infotexts += proc.infotexts         
 
         return Processed(p, images, p.seed, "", all_prompts=all_prompts, infotexts=infotexts)
