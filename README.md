@@ -10,7 +10,19 @@ scriptタブの「bulk_highres」からhighresで回したい画像をディレ�
 
 そのままGenerateボタンを押すと生成されていきます。
 
-i2i_modeはディレクトリの画像を「i2i_upscale」、「i2i_denoising_strength」で指定した倍率、強度でi2iしていきます。
+i2i_mode:ディレクトリの画像を「i2i_upscale」、「i2i_denoising_strength」で指定した値でi2i処理します。
+
+i2i_upscale:生成する際の拡大倍率。元入力画像のサイズが512x512で、倍率が2であれば1024x1024サイズで出力されます。
+
+i2i_denoising_strength:デノイズ強度。
+
+Additional prompt:追加したいワードをここに記入しておくことで、生成する際に追加プロンプトが自動で挿入されて生成されていきます。
+
+prompt insert position:プロンプトの挿入位置を決定できます。「begin」であれば文頭、「end」であれば文末に挿入されます。
+
+Additional negative prompt:追加したいワードをここに記入しておくことで、生成する際に追加ネガティブプロンプトが自動で挿入されて生成されていきます。
+
+Negative prompt insert position:ネガティブプロンプトの挿入位置を決定できます。「begin」であれば文頭、「end」であれば文末に挿入されます。
 
 ### 注意
 
