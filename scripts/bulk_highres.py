@@ -21,7 +21,38 @@ from PIL import Image, ImageOps
 from modules import devices, sd_models, images,extra_networks,sd_samplers
 from modules import script_callbacks,processing
 
-from scripts import generation_parameters_copypaste
+from modules import generation_parameters_copypaste
+
+def matching_metadata_and_sdprocessparam(p,k,v):
+    if k == "Prompt":
+        setattr(p,"prompt",v)
+    elif k == "Negative prompt":
+        setattr(p,"negative_prompt",v)
+    elif k == "Size-1":
+        setattr(p,"width",int(v))
+    elif k == "Size-2":
+        setattr(p,"height",int(v))
+    if k == "Seed":
+        setattr(p,"seed",int(v))
+    elif k == "Cfg scale":
+        setattr(p,"cfg_scale",int(v))
+    elif k == "Sampler":
+        setattr(p,"sampler_name",v)
+    elif k == "Steps":
+        setattr(p,"steps",int(v))
+    elif k == "Model":
+        setattr(p,"model_name",v)
+    elif k == "Denoising strength":
+        setattr(p,"denoising_strength",float(v))
+    elif k == "Hires resize-1":
+        setattr(p,"hr_resize_x",int(v))
+        setattr(p,"hr_upscale_to_x",int(v))
+    elif k == "Hires resize-2":
+        setattr(p,"hr_resize_y",int(v))
+        setattr(p,"hr_upscale_to_y",int(v))
+    else:
+        setattr(p,k,v)
+
 
 class Script(scripts.Script):
     def __init__(self):
@@ -32,34 +63,41 @@ class Script(scripts.Script):
     def ui(self, is_img2img):
         
         with gr.Row():
-            i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode")
+            i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode", visible = not is_img2img)
         
         with gr.Row():
-            i2i_denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,interactive =True, label="i2i_denoising_strength", elem_id=f"i2i_denoising_strength", value=0.7)
+            i2i_denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,interactive =True, label="i2i_denoising_strength", elem_id=f"i2i_denoising_strength", value=0.7, visible = not is_img2img)
 
         with gr.Row():
-            i2i_upscaler = gr.Slider(minimum=1.0, maximum=4.0, step=0.1,interactive =True, label="i2i_upscale", elem_id=f"i2i_upscale", value=2.0)
+            i2i_upscaler = gr.Slider(minimum=1.0, maximum=4.0, step=0.1,interactive =True, label="i2i_upscale", elem_id=f"i2i_upscale", value=2.0, visible = not is_img2img)
 
         with gr.Row():
-            img_dir = gr.Textbox(label="List of images inputs", lines=1, elem_id=self.elem_id("img_dir"))
+            img_dir = gr.Textbox(label="List of images inputs", nteractive =True, lines=1, elem_id=self.elem_id("img_dir"), visible = not is_img2img)
         
+        with gr.Row():
+            add_prompt = gr.Textbox(label="Additional prompt", nteractive =True,lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
+        
+        with gr.Row():
+            pos_pormpt = gr.Radio(label="Prompt insert position", nteractive =True, choices=["begin","end"],value="begin", elem_id=self.elem_id("pos_prompt"), visible = not is_img2img)
+        
+        with gr.Row():
+            add_neg_prompt = gr.Textbox(label="Additional negative prompt", nteractive =True, lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
+        
+        with gr.Row():
+            pos_neg_pormpt = gr.Radio(label="Negative prompt insert position", nteractive =True, choices=["begin","end"],value="end", elem_id=self.elem_id("pos_neg_prompt"), visible = not is_img2img)
+        
+
             
         self.is_i2i = is_img2img
-
-        if is_img2img:
-            i2i_mode.visible = False
-            i2i_denoising_strength.visible = False
-            i2i_upscaler.visible = False
-            img_dir.visible = False
         
         # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
         # We don't shrink back to 1, because that causes the control to ignore [enter], and it may
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode]
+        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt]
 
-    def run(self, p, img_dir, i2i_upscaler, i2i_denoising_strength, i2i_mode):
+    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt):
         # print("tes1")
         
         p.do_not_save_grid = True
@@ -80,17 +118,45 @@ class Script(scripts.Script):
                       continue
                     # print(f"{metadata}")
                 metadata = generation_parameters_copypaste.parse_generation_parameters(metadata)
+                if pos_pormpt == "begin":
+                    metadata['Prompt'] = add_prompt + metadata['Prompt'] 
+                elif pos_pormpt == "end":
+                    metadata['Prompt'] = metadata['Prompt'] + add_prompt
+                
+                if pos_neg_pormpt == "begin":
+                    metadata['Negative prompt'] = add_neg_prompt + metadata['Negative prompt'] 
+                elif pos_neg_pormpt == "end":
+                    metadata['Negative prompt'] = metadata['Negative prompt'] + add_neg_prompt
+                
+                # print(f"{metadata}")
                 list_meta.append(metadata)
         
-        list_meta.sort(key=lambda x: x['sd_model_checkpoint'])
+        list_meta.sort(key=lambda x: x['Model hash'])
 
         for metadata in list_meta:
 
             # change checkpoints
-            info = modules.sd_models.get_closet_checkpoint_match(metadata['sd_model_checkpoint'])
+            sdmodels_list = [{"title": x.title, "model_name": x.model_name, "hash": x.shorthash, "sha256": x.sha256, "filename": x.filename} for x in sd_models.checkpoints_list.values()]
+
+            # print(f"{sdmodels_list}")
+            
+            model_name = ""
+            for model in sdmodels_list:
+
+                if 'Model hash' in metadata:
+                    if model['hash'] == metadata['Model hash']:
+                        model_name = model['model_name']
+                        break
+
+                if 'Model' in metadata:
+                    if model['model_name'] == metadata['Model']:
+                        model_name = model['model_name']
+                        break
+                
+            info = sd_models.get_closet_checkpoint_match(model_name)
             if info is None:
-                raise RuntimeError(f"Unknown checkpoint: {metadata['sd_model_checkpoint']}")
-            modules.sd_models.reload_model_weights(shared.sd_model, info)        
+                raise RuntimeError(f"Unknown checkpoint in '{filename}' ")
+            sd_models.reload_model_weights(shared.sd_model, info)        
 
             # run process
             copy_p = copy.copy(p)
@@ -103,14 +169,22 @@ class Script(scripts.Script):
                     denoising_strength=i2i_denoising_strength
                 )
                 for k, v in metadata.items():
-                    if k == 'width' or k == 'height':
+                    if k == 'Size-1' or k == 'Size-2':
                         setattr(copy_p, k, v * i2i_upscaler)
                     else:
-                        setattr(copy_p, k, v)
+                        matching_metadata_and_sdprocessparam(copy_p, k, v)
                 
             else:
                 for k, v in metadata.items():
-                    setattr(copy_p, k, v)
+                    matching_metadata_and_sdprocessparam(copy_p, k, v)
+                
+                if copy_p.hr_resize_x == 0:
+                    setattr(p,"hr_resize_x",int(copy_p.hr_resize_y))
+                    setattr(p,"hr_upscale_to_x",int(copy_p.hr_resize_y))
+                if copy_p.hr_resize_y == 0:
+                    setattr(p,"hr_resize_y",int(copy_p.hr_resize_x))
+                    setattr(p,"hr_upscale_to_y",int(copy_p.hr_resize_x))
+
             # for k, v in copy_p.__dict__.items():
             #     print(f"k:{k},v:{v}")
             
