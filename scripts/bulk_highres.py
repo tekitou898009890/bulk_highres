@@ -73,6 +73,15 @@ class Script(scripts.Script):
             img_dir = gr.Textbox(label="List of images inputs", nteractive =True, lines=1, elem_id=self.elem_id("img_dir"), visible = not is_img2img)
         
         with gr.Row():
+            ow_seed_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite seed", elem_id=f"ow_seed_mode", visible = not is_img2img)
+            ow_seed = gr.Number(value=-1, interactive =True, label="Overwrite seed number", elem_id=f"ow_seed", visible = not is_img2img)
+
+
+        with gr.Row():
+            ow_step_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite steps", elem_id=f"ow_step_mode", visible = not is_img2img)
+            ow_step = gr.Slider(minimum=1, maximum=150, step=1,interactive =True, label="Overwrite steps number", elem_id=f"ow_step", value = 50, visible = not is_img2img)
+
+        with gr.Row():
             add_prompt = gr.Textbox(label="Additional prompt", nteractive =True,lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
         
         with gr.Row():
@@ -84,7 +93,7 @@ class Script(scripts.Script):
         with gr.Row():
             pos_neg_pormpt = gr.Radio(label="Negative prompt insert position", nteractive =True, choices=["begin","end"],value="end", elem_id=self.elem_id("pos_neg_prompt"), visible = not is_img2img)
         
-
+        
             
         self.is_i2i = is_img2img
         
@@ -93,9 +102,9 @@ class Script(scripts.Script):
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt]
+        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
 
-    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt):
+    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
         # print("tes1")
         
         p.do_not_save_grid = True
@@ -182,7 +191,12 @@ class Script(scripts.Script):
                 if copy_p.hr_resize_y == 0:
                     setattr(p,"hr_resize_y",int(copy_p.hr_resize_x))
                     setattr(p,"hr_upscale_to_y",int(copy_p.hr_resize_x))
-
+            
+            if ow_step_mode:
+                setattr(copy_p,"steps",int(ow_step))
+            if ow_seed_mode:
+                setattr(copy_p,"seed",int(ow_seed))
+                
             # for k, v in copy_p.__dict__.items():
             #     print(f"k:{k},v:{v}")
             
