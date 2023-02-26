@@ -46,10 +46,8 @@ def matching_metadata_and_sdprocessparam(p,k,v):
         setattr(p,"denoising_strength",float(v))
     elif k == "Hires resize-1":
         setattr(p,"hr_resize_x",int(v))
-        setattr(p,"hr_upscale_to_x",int(v))
     elif k == "Hires resize-2":
         setattr(p,"hr_resize_y",int(v))
-        setattr(p,"hr_upscale_to_y",int(v))
     else:
         setattr(p,k,v)
 
