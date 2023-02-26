@@ -149,21 +149,25 @@ class Script(scripts.Script):
             
             model_name = ""
             for model in sdmodels_list:
+                    if 'Model hash' in metadata:
+                        if model['hash'] == metadata['Model hash']:
+                                    model_name = model['model_name']
+                                    break
 
-                if 'Model hash' in metadata:
-                    if model['hash'] == metadata['Model hash']:
-                        model_name = model['model_name']
-                        break
-
-                if 'Model' in metadata:
-                    if model['model_name'] == metadata['Model']:
-                        model_name = model['model_name']
-                        break
+                    if 'Model' in metadata:
+                        if model['model_name'] == metadata['Model']:
+                            model_name = model['model_name']
+                            break
+            if model_name is None or model_name == "":
+                print("The checkpoint was not found. So it will continue to use the checkpoint currently in use.")
                 
-            info = sd_models.get_closet_checkpoint_match(model_name)
-            if info is None:
-                raise RuntimeError(f"Unknown checkpoint in '{filename}' ")
-            sd_models.reload_model_weights(shared.sd_model, info)        
+            else:
+                info = sd_models.get_closet_checkpoint_match(model_name)
+
+                if info.name == "nullModelzeros" or info.shorthash == "17d6549029" or info is None:
+                    raise RuntimeError(f"nullModelzeros or Unknown checkpoint in '{filename}' ")
+                    
+                sd_models.reload_model_weights(shared.sd_model, info)        
 
             # run process
             copy_p = copy.copy(p)
@@ -198,7 +202,7 @@ class Script(scripts.Script):
                 setattr(copy_p,"seed",int(ow_seed))
                 
             # for k, v in copy_p.__dict__.items():
-            #     print(f"k:{k},v:{v}")
+            #    print(f"k:{k},v:{v}")
             
             proc = process_images(copy_p)
             
