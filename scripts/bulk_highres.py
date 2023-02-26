@@ -74,11 +74,12 @@ class Script(scripts.Script):
         
         with gr.Row():
             ow_seed_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite seed", elem_id=f"ow_seed_mode", visible = not is_img2img)
-            ow_seed = gr.Slider(minimum=1, maximum=4, step=1,interactive =True, label="Overwrite seed number", elem_id=f"ow_seed", value = 50, visible = not is_img2img)
+            ow_seed = gr.Number(value=-1, interactive =True, label="Overwrite seed number", elem_id=f"ow_seed", visible = not is_img2img)
+
 
         with gr.Row():
             ow_step_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite steps", elem_id=f"ow_step_mode", visible = not is_img2img)
-            ow_step = gr.Slider(minimum=1, maximum=4, step=1,interactive =True, label="Overwrite steps number", elem_id=f"ow_step", value = 50, visible = not is_img2img)
+            ow_step = gr.Slider(minimum=1, maximum=150, step=1,interactive =True, label="Overwrite steps number", elem_id=f"ow_step", value = 50, visible = not is_img2img)
 
         with gr.Row():
             add_prompt = gr.Textbox(label="Additional prompt", nteractive =True,lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
