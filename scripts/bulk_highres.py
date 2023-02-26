@@ -191,10 +191,8 @@ class Script(scripts.Script):
                 
                 if copy_p.hr_resize_x == 0:
                     setattr(p,"hr_resize_x",int(copy_p.hr_resize_y))
-                    setattr(p,"hr_upscale_to_x",int(copy_p.hr_resize_y))
                 if copy_p.hr_resize_y == 0:
                     setattr(p,"hr_resize_y",int(copy_p.hr_resize_x))
-                    setattr(p,"hr_upscale_to_y",int(copy_p.hr_resize_x))
             
             if ow_step_mode:
                 setattr(copy_p,"steps",int(ow_step))
