@@ -121,8 +121,8 @@ class Script(scripts.Script):
                 with Image.open(file_path) as im:
                     metadata,items = read_info_from_image(im)
                     if metadata is None:
-                      print(f"Skip {filename} as it has no metadata.")
-                      continue
+                        print(f"Skip {filename} as it has no metadata.")
+                        continue
                     # print(f"{metadata}")
                 metadata = generation_parameters_copypaste.parse_generation_parameters(metadata)
                 if pos_pormpt == "begin":
