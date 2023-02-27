@@ -189,9 +189,9 @@ class Script(scripts.Script):
                 for k, v in metadata.items():
                     matching_metadata_and_sdprocessparam(copy_p, k, v)
                 
-                if copy_p.hr_resize_x == 0:
+                if copy_p.hr_resize_x == 0 and copy_p.hr_scale == 0:
                     setattr(p,"hr_resize_x",int(copy_p.hr_resize_y))
-                if copy_p.hr_resize_y == 0:
+                if copy_p.hr_resize_y == 0 and copy_p.hr_scale == 0:
                     setattr(p,"hr_resize_y",int(copy_p.hr_resize_x))
             
             if ow_step_mode:
