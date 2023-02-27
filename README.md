@@ -30,6 +30,8 @@ PNGのメタデータから読み取って回してるだけなので、他の�
 
 papespaceだと「copy path」でコピーされるパスが「stable-diffusion-webui/outputs」と、「/notebooks/」が抜けているので入力する際は「/notebooks/stable-diffusion-webui/outputs」といった感じで入力してください。
 
+またpaperspaceでは一定の文字数以上のファイル名はアップロード時に「~」で省略されて生成されないことがありますので、その時はリネームしてからアップロードをお願いします。
+
 img2imgタブのscriptからはとりあえず使用できないようになってます。
 
 colabや初めて入れた環境だとhash値が計算されてない故に、上手くマッチングしないことがあるので、その時は再起動してみるといいかもしれません。
