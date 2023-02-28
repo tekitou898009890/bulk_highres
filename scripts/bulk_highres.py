@@ -135,6 +135,10 @@ class Script(scripts.Script):
                 elif pos_neg_pormpt == "end":
                     metadata['Negative prompt'] = metadata['Negative prompt'] + add_neg_prompt
                 
+                if "Model hash" not in metadata:
+                    # if none -> add 0
+                    metadata['Model hash'] = "00000000"
+                    
                 # print(f"{metadata}")
                 list_meta.append(metadata)
         
