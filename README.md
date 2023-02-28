@@ -1,4 +1,4 @@
-# bulk_highres
+# image_regenerator
 
 stable-diffusion-webuiで生成された画像のメタデータを読み取って再度生成を行うスクリプトです。
 
