@@ -56,7 +56,7 @@ class Script(scripts.Script):
     def __init__(self):
         self.is_i2i = False
     def title(self):
-        return "bulk_highres"
+        return "image_regenerator"
     
     def ui(self, is_img2img):
         
