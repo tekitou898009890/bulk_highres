@@ -205,8 +205,15 @@ class Script(scripts.Script):
                 
             # for k, v in copy_p.__dict__.items():
             #    print(f"k:{k},v:{v}")
+            try:
+                proc = process_images(copy_p)
+            except RuntimeError as e:
+                if 'out of memory' in str(e);
+                    print('CUDA out of memory')
+                    continue
+                else:
+                    raise e #他のエラーはそのままスルー
             
-            proc = process_images(copy_p)
             
             images += proc.images
             all_prompts += proc.all_prompts
