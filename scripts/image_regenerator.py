@@ -208,7 +208,7 @@ class Script(scripts.Script):
             try:
                 proc = process_images(copy_p)
             except RuntimeError as e:
-                if 'out of memory' in str(e);
+                if 'out of memory' in str(e):
                     print('CUDA out of memory')
                     continue
                 else:
