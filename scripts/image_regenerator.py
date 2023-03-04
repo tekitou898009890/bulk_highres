@@ -61,6 +61,9 @@ class Script(scripts.Script):
     def ui(self, is_img2img):
         
         with gr.Row():
+            load_model = gr.Checkbox(value = False, interactive =True, label="load_model_in_metadata", elem_id=f"load_model", visible = not is_img2img)
+            
+        with gr.Row():
             i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode", visible = not is_img2img)
         
         with gr.Row():
@@ -102,9 +105,9 @@ class Script(scripts.Script):
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
+        return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
 
-    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
+    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
         # print("tes1")
         
         p.do_not_save_grid = True
@@ -152,26 +155,27 @@ class Script(scripts.Script):
             # print(f"{sdmodels_list}")
             
             model_name = ""
-            for model in sdmodels_list:
-                    if 'Model hash' in metadata:
-                        if model['hash'] == metadata['Model hash']:
-                                    model_name = model['model_name']
-                                    break
+            if load_model:
+                for model in sdmodels_list:
+                        if 'Model hash' in metadata:
+                            if model['hash'] == metadata['Model hash']:
+                                        model_name = model['model_name']
+                                        break
 
-                    if 'Model' in metadata:
-                        if model['model_name'] == metadata['Model']:
-                            model_name = model['model_name']
-                            break
-            if model_name is None or model_name == "":
-                print("The checkpoint was not found. So it will continue to use the checkpoint currently in use.")
-                
-            else:
-                info = sd_models.get_closet_checkpoint_match(model_name)
+                        if 'Model' in metadata:
+                            if model['model_name'] == metadata['Model']:
+                                model_name = model['model_name']
+                                break
+                if model_name is None or model_name == "":
+                    print("The checkpoint was not found. So it will continue to use the checkpoint currently in use.")
 
-                if info.name == "nullModelzeros" or info.shorthash == "17d6549029" or info is None:
-                    raise RuntimeError(f"nullModelzeros or Unknown checkpoint in '{filename}' ")
-                    
-                sd_models.reload_model_weights(shared.sd_model, info)        
+                else:
+                    info = sd_models.get_closet_checkpoint_match(model_name)
+
+                    if info.name == "nullModelzeros" or info.shorthash == "17d6549029" or info is None:
+                        raise RuntimeError(f"nullModelzeros or Unknown checkpoint in '{filename}' ")
+
+                    sd_models.reload_model_weights(shared.sd_model, info)        
 
             # run process
             copy_p = copy.copy(p)
