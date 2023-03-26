@@ -53,7 +53,7 @@ def matching_metadata_and_sdprocessparam(p,k,v):
 
 
 
-class irScript(scripts.Script):
+class IRScript(scripts.Script):
     def __init__(self):
         self.is_i2i = False
     def title(self):
