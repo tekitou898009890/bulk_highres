@@ -6,7 +6,7 @@ import modules.ui
 
 from modules import images
 from modules.processing import process_images,Processed
-from modules.processing import StableDiffusionProcessingImg2Img
+from modules.processing import StableDiffusionProcessingImg2Img,StableDiffusionProcessing
 from modules.shared import opts, cmd_opts, state
 from modules.images import read_info_from_image
 
@@ -53,7 +53,7 @@ def matching_metadata_and_sdprocessparam(p,k,v):
 
 
 
-class IRScript(scripts.Script):
+class Script(scripts.Script):
     def __init__(self):
         self.is_i2i = False
     def title(self):
@@ -66,6 +66,8 @@ class IRScript(scripts.Script):
         
         with gr.Group():
             with gr.Accordion("image_regenerator", open=False):
+                
+                enabled = gr.Checkbox(value=False, label="Enabled")
         
                 with gr.Row():
                     load_model = gr.Checkbox(value = False, interactive =True, label="load_model_in_metadata", elem_id=f"load_model", visible = not is_img2img)
@@ -112,10 +114,15 @@ class IRScript(scripts.Script):
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
+        return [enabled,img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
 
-    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
+    def run(self, p, enabled, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
         # print("tes1")
+        
+        self.enabled = enabled
+
+        if not self.enabled:
+            return
         
         p.do_not_save_grid = True
 
