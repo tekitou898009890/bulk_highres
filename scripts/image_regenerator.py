@@ -115,16 +115,16 @@ class Script(scripts.Script):
         
         # return [img_dir,i2i_upscaler,i2i_mode]
         return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
-        # return [enabled,img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
+        # return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
 
     
-    def run(self, p, enabled, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
+    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
         # print("tes1")
         
-        self.enabled = enabled
+#         self.enabled = enabled
 
-        if not self.enabled:
-            return
+#         if not self.enabled:
+#             return
         
         p.do_not_save_grid = True
 
