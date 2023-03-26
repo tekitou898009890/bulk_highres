@@ -52,11 +52,15 @@ def matching_metadata_and_sdprocessparam(p,k,v):
         setattr(p,k,v)
 
 
-class Script(scripts.Script):
+
+class irScript(scripts.Script):
     def __init__(self):
         self.is_i2i = False
     def title(self):
         return "image_regenerator"
+    
+    def show(self, is_img2img):
+        return scripts.AlwaysVisible
     
     def ui(self, is_img2img):
         
