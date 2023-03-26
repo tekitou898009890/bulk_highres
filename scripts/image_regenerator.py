@@ -4,11 +4,9 @@ import modules.scripts as scripts
 import modules.shared as shared
 import modules.ui
 
-import torch
-
 from modules import images
 from modules.processing import process_images,Processed
-from modules.processing import StableDiffusionProcessingImg2Img,StableDiffusionProcessing
+from modules.processing import StableDiffusionProcessingImg2Img
 from modules.shared import opts, cmd_opts, state
 from modules.images import read_info_from_image
 
@@ -61,63 +59,65 @@ class Script(scripts.Script):
     def title(self):
         return "image_regenerator"
     
-    def show(self, is_img2img):
-        return scripts.AlwaysVisible
+#     def show(self, is_img2img):
+#         return scripts.AlwaysVisible
     
     def ui(self, is_img2img):
         
-        with gr.Group():
-            with gr.Accordion("image_regenerator", open=False):
+#         with gr.Group():
+#             with gr.Accordion("image_regenerator", open=False):
                 
-                enabled = gr.Checkbox(value=False, label="Enabled")
+#                 enabled = gr.Checkbox(value=False, label="Enabled")
         
-                with gr.Row():
-                    load_model = gr.Checkbox(value = False, interactive =True, label="load_model_in_metadata", elem_id=f"load_model", visible = not is_img2img)
+        with gr.Row():
+            load_model = gr.Checkbox(value = False, interactive =True, label="load_model_in_metadata", elem_id=f"load_model", visible = not is_img2img)
 
-                with gr.Row():
-                    i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode", visible = not is_img2img)
+        with gr.Row():
+            i2i_mode = gr.Checkbox(value = False, interactive =True, label="i2i_mode", elem_id=f"i2i_mode", visible = not is_img2img)
 
-                with gr.Row():
-                    i2i_denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,interactive =True, label="i2i_denoising_strength", elem_id=f"i2i_denoising_strength", value=0.7, visible = not is_img2img)
+        with gr.Row():
+            i2i_denoising_strength = gr.Slider(minimum=0.0, maximum=1.0, step=0.01,interactive =True, label="i2i_denoising_strength", elem_id=f"i2i_denoising_strength", value=0.7, visible = not is_img2img)
 
-                with gr.Row():
-                    i2i_upscaler = gr.Slider(minimum=1.0, maximum=4.0, step=0.1,interactive =True, label="i2i_upscale", elem_id=f"i2i_upscale", value=2.0, visible = not is_img2img)
+        with gr.Row():
+            i2i_upscaler = gr.Slider(minimum=1.0, maximum=4.0, step=0.1,interactive =True, label="i2i_upscale", elem_id=f"i2i_upscale", value=2.0, visible = not is_img2img)
 
-                with gr.Row():
-                    img_dir = gr.Textbox(label="List of images inputs", nteractive =True, lines=1, elem_id=self.elem_id("img_dir"), visible = not is_img2img)
+        with gr.Row():
+            img_dir = gr.Textbox(label="List of images inputs", nteractive =True, lines=1, elem_id=self.elem_id("img_dir"), visible = not is_img2img)
 
-                with gr.Row():
-                    ow_seed_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite seed", elem_id=f"ow_seed_mode", visible = not is_img2img)
-                    ow_seed = gr.Number(value=-1, interactive =True, label="Overwrite seed number", elem_id=f"ow_seed", visible = not is_img2img)
-
-
-                with gr.Row():
-                    ow_step_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite steps", elem_id=f"ow_step_mode", visible = not is_img2img)
-                    ow_step = gr.Slider(minimum=1, maximum=150, step=1,interactive =True, label="Overwrite steps number", elem_id=f"ow_step", value = 50, visible = not is_img2img)
-
-                with gr.Row():
-                    add_prompt = gr.Textbox(label="Additional prompt", nteractive =True,lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
-
-                with gr.Row():
-                    pos_pormpt = gr.Radio(label="Prompt insert position", nteractive =True, choices=["begin","end"],value="begin", elem_id=self.elem_id("pos_prompt"), visible = not is_img2img)
-
-                with gr.Row():
-                    add_neg_prompt = gr.Textbox(label="Additional negative prompt", nteractive =True, lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
-
-                with gr.Row():
-                    pos_neg_pormpt = gr.Radio(label="Negative prompt insert position", nteractive =True, choices=["begin","end"],value="end", elem_id=self.elem_id("pos_neg_prompt"), visible = not is_img2img)
+        with gr.Row():
+            ow_seed_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite seed", elem_id=f"ow_seed_mode", visible = not is_img2img)
+            ow_seed = gr.Number(value=-1, interactive =True, label="Overwrite seed number", elem_id=f"ow_seed", visible = not is_img2img)
 
 
+        with gr.Row():
+            ow_step_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite steps", elem_id=f"ow_step_mode", visible = not is_img2img)
+            ow_step = gr.Slider(minimum=1, maximum=150, step=1,interactive =True, label="Overwrite steps number", elem_id=f"ow_step", value = 50, visible = not is_img2img)
 
-                self.is_i2i = is_img2img
+        with gr.Row():
+            add_prompt = gr.Textbox(label="Additional prompt", nteractive =True,lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
+
+        with gr.Row():
+            pos_pormpt = gr.Radio(label="Prompt insert position", nteractive =True, choices=["begin","end"],value="begin", elem_id=self.elem_id("pos_prompt"), visible = not is_img2img)
+
+        with gr.Row():
+            add_neg_prompt = gr.Textbox(label="Additional negative prompt", nteractive =True, lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
+
+        with gr.Row():
+            pos_neg_pormpt = gr.Radio(label="Negative prompt insert position", nteractive =True, choices=["begin","end"],value="end", elem_id=self.elem_id("pos_neg_prompt"), visible = not is_img2img)
+
+
+
+        self.is_i2i = is_img2img
         
         # We start at one line. When the text changes, we jump to seven lines, or two lines if no \n.
         # We don't shrink back to 1, because that causes the control to ignore [enter], and it may
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [enabled,img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
+        return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
+        # return [enabled,img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
 
+    
     def run(self, p, enabled, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
         # print("tes1")
         
