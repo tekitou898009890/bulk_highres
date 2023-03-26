@@ -4,6 +4,8 @@ import modules.scripts as scripts
 import modules.shared as shared
 import modules.ui
 
+import torch
+
 from modules import images
 from modules.processing import process_images,Processed
 from modules.processing import StableDiffusionProcessingImg2Img,StableDiffusionProcessing
