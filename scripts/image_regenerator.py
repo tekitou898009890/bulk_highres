@@ -85,6 +85,9 @@ class Script(scripts.Script):
             img_dir = gr.Textbox(label="List of images inputs", nteractive =True, lines=1, elem_id=self.elem_id("img_dir"), visible = not is_img2img)
 
         with gr.Row():
+            ow_ckpt = gr.Checkbox(value = False, interactive =True, label="Hold ckpt used now", elem_id=f"ow_ckpt", visible = not is_img2img)
+
+        with gr.Row():
             ow_seed_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite seed", elem_id=f"ow_seed_mode", visible = not is_img2img)
             ow_seed = gr.Number(value=-1, interactive =True, label="Overwrite seed number", elem_id=f"ow_seed", visible = not is_img2img)
 
@@ -165,33 +168,34 @@ class Script(scripts.Script):
 
         for metadata in list_meta:
 
-            # change checkpoints
-            sdmodels_list = [{"title": x.title, "model_name": x.model_name, "hash": x.shorthash, "sha256": x.sha256, "filename": x.filename} for x in sd_models.checkpoints_list.values()]
-
-            # print(f"{sdmodels_list}")
-            
-            model_name = ""
-            if load_model:
-                for model in sdmodels_list:
-                        if 'Model hash' in metadata:
-                            if model['hash'] == metadata['Model hash']:
-                                        model_name = model['model_name']
-                                        break
-
-                        if 'Model' in metadata:
-                            if model['model_name'] == metadata['Model']:
-                                model_name = model['model_name']
-                                break
-                if model_name is None or model_name == "":
-                    print("The checkpoint was not found. So it will continue to use the checkpoint currently in use.")
-
-                else:
-                    info = sd_models.get_closet_checkpoint_match(model_name)
-
-                    if info.name == "nullModelzeros" or info.shorthash == "17d6549029" or info is None:
-                        raise RuntimeError(f"nullModelzeros or Unknown checkpoint in '{filename}' ")
-
-                    sd_models.reload_model_weights(shared.sd_model, info)        
+            if ow_ckpt:
+                # change checkpoints
+                sdmodels_list = [{"title": x.title, "model_name": x.model_name, "hash": x.shorthash, "sha256": x.sha256, "filename": x.filename} for x in sd_models.checkpoints_list.values()]
+    
+                # print(f"{sdmodels_list}")
+                
+                model_name = ""
+                if load_model:
+                    for model in sdmodels_list:
+                            if 'Model hash' in metadata:
+                                if model['hash'] == metadata['Model hash']:
+                                            model_name = model['model_name']
+                                            break
+    
+                            if 'Model' in metadata:
+                                if model['model_name'] == metadata['Model']:
+                                    model_name = model['model_name']
+                                    break
+                    if model_name is None or model_name == "":
+                        print("The checkpoint was not found. So it will continue to use the checkpoint currently in use.")
+    
+                    else:
+                        info = sd_models.get_closet_checkpoint_match(model_name)
+    
+                        if info.name == "nullModelzeros" or info.shorthash == "17d6549029" or info is None:
+                            raise RuntimeError(f"nullModelzeros or Unknown checkpoint in '{filename}' ")
+    
+                        sd_models.reload_model_weights(shared.sd_model, info)        
 
             # run process
             copy_p = copy.copy(p)
