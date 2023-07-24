@@ -169,6 +169,8 @@ class Script(scripts.Script):
         for metadata in list_meta:
 
             if ow_ckpt:
+                pass
+            else:
                 # change checkpoints
                 sdmodels_list = [{"title": x.title, "model_name": x.model_name, "hash": x.shorthash, "sha256": x.sha256, "filename": x.filename} for x in sd_models.checkpoints_list.values()]
     
