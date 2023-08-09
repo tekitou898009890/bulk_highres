@@ -97,6 +97,14 @@ class Script(scripts.Script):
             ow_step = gr.Slider(minimum=1, maximum=150, step=1,interactive =True, label="Overwrite steps number", elem_id=f"ow_step", value = 50, visible = not is_img2img)
 
         with gr.Row():
+            ow_w_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite width", elem_id=f"ow_w_mode", visible = not is_img2img)
+            ow_width = gr.Slider(minimum=64, maximum=2048, step=8, label="Width", value=512, elem_id="ow_width")
+        with gr.Row():
+            ow_h_mode = gr.Checkbox(value = False, interactive =True, label="Overwrite height", elem_id=f"ow_h_mode", visible = not is_img2img)
+            ow_height = gr.Slider(minimum=64, maximum=2048, step=8, label="Height", value=512, elem_id="ow_height")
+            
+
+        with gr.Row():
             add_prompt = gr.Textbox(label="Additional prompt", nteractive =True,lines=2, elem_id=self.elem_id("add_prompt"), visible = not is_img2img)
 
         with gr.Row():
@@ -117,11 +125,11 @@ class Script(scripts.Script):
         # be unclear to the user that shift-enter is needed.
         
         # return [img_dir,i2i_upscaler,i2i_mode]
-        return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
+        return [img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_ckpt,ow_step_mode, ow_step, ow_seed_mode, ow_seed, ow_w_mode, ow_width, ow_h_mode, ow_height]
         # return [img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed]
 
     
-    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, load_model, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_step_mode, ow_step, ow_seed_mode, ow_seed):
+    def run(self, p, img_dir,i2i_upscaler, i2i_denoising_strength, i2i_mode, add_prompt, pos_pormpt, add_neg_prompt, pos_neg_pormpt, ow_ckpt,ow_step_mode, ow_step, ow_seed_mode, ow_seed, ow_w_mode, ow_width, ow_h_mode, ow_height):
         # print("tes1")
         
 #         self.enabled = enabled
@@ -223,7 +231,11 @@ class Script(scripts.Script):
                     setattr(p,"hr_resize_x",int(copy_p.hr_resize_y))
                 if copy_p.hr_resize_y == 0 and copy_p.hr_scale == 0:
                     setattr(p,"hr_resize_y",int(copy_p.hr_resize_x))
-            
+
+            if ow_w_mode:
+                setattr(copy_p,"width",int(ow_width))
+            if ow_h_mode:
+                setattr(copy_p,"height",int(ow_height))
             if ow_step_mode:
                 setattr(copy_p,"steps",int(ow_step))
             if ow_seed_mode:
